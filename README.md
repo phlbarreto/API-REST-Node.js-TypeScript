@@ -1,12 +1,18 @@
 # API-REST-Node.js-TypeScript
 
 ## 🚀 Tecnologias
+
+### Principais
 - **Node.js + Express**
 - **TypeScript**
 - **PostgreSQL** (com Prisma)
 - **Bcrypt** (hash password)
 - **Zod** (validação de dados)
 - **CookieParser** (cookie httpOnly para sessão)
+  
+### Auxiliares
+- **Dotenv** (variaveis de ambiente)
+- **CORS** (controle de acesso entre dominios)
 ---
 
 ## 🗂️ Estrutura de Entidades
