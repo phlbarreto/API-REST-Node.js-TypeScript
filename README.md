@@ -1,41 +1,57 @@
 # API-REST-Node.js-TypeScript
 
 ## 🚀 Tecnologias
+
+### Principais
 - **Node.js + Express**
 - **TypeScript**
 - **PostgreSQL** (com Prisma)
-- **JWT** (autenticação)
+- **Bcrypt** (hash password)
 - **Zod** (validação de dados)
-
+- **CookieParser** (cookie httpOnly para sessão)
+  
+### Auxiliares
+- **Dotenv** (variaveis de ambiente)
+- **CORS** (controle de acesso entre dominios)
 ---
 
 ## 🗂️ Estrutura de Entidades
 
 ### User
-- `id` (uuid)  
+- `id`   
 - `name`  
 - `email` (único)  
 - `password` (hash)  
-- `createdAt`  
+- `createdAt`
+
+### UserSession
+- `id` (uuid)
+- `user_id`
+- `expires_at`
+- `last_act_at`
 
 ### Task
 - `id` (uuid)  
 - `title`  
 - `description`  
-- `status` (`pending | in_progress | done`)  
+- `status` (`TaskStatus`)  
 - `userId` (FK → User)  
-- `createdAt / updatedAt`  
+- `createdAt / updatedAt`
+
+### Enums
+- **TaskStatus**
+- `pending`
+- `in_progress`
+- `done`
 
 ---
 
 ## 📌 Endpoints
 
 ### Auth
-- `POST /auth/register` → Criar novo usuário  
-- `POST /auth/login` → Autenticação do usuário  
-
-### Users
-- `GET /users/me` → Retorna dados do usuário logado  
+- `POST /register` → Criar novo usuário  
+- `POST /login` → Autenticação do usuário  
+- `GET /validate` → Autenticação de sessão do usuário, retorna dados do usuário logado
 
 ### Tasks
 - `GET /tasks` → Listar todas as tarefas do usuário logado  
