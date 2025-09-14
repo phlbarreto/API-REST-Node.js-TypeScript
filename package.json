@@ -1,0 +1,30 @@
+{
+  "name": "api-rest-node.js-typescript",
+  "version": "1.0.0",
+  "description": "- **Node.js + Express**\r - **TypeScript**\r - **PostgreSQL** (com Prisma)\r - **JWT** (autenticação)\r - **Zod** (validação de dados)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
+    "build": "tsc",
+    "start": "node ./dist/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phlbarreto/API-REST-Node.js-TypeScript.git"
+  },
+  "keywords": [],
+  "author": "Pedro Barreto - https://github.com/phlbarreto",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/phlbarreto/API-REST-Node.js-TypeScript/issues"
+  },
+  "homepage": "https://github.com/phlbarreto/API-REST-Node.js-TypeScript#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "ts-node-dev": "^2.0.0"
+  }
+}
