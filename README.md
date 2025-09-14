@@ -56,5 +56,5 @@
 ### Tasks
 - `GET /tasks` → Listar todas as tarefas do usuário logado  
 - `POST /tasks` → Criar nova tarefa  
-- `PUT /tasks/:id` → Atualizar tarefa existente  
+- `PATCH /tasks/:id` → Atualizar tarefa existente  
 - `DELETE /tasks/:id` → Excluir tarefa  
