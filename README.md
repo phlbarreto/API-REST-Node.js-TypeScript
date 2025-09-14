@@ -34,9 +34,15 @@
 - `id` (uuid)  
 - `title`  
 - `description`  
-- `status` (`pending | in_progress | done`)  
+- `status` (`TaskStatus`)  
 - `userId` (FK → User)  
-- `createdAt / updatedAt`  
+- `createdAt / updatedAt`
+
+### Enums
+- **TaskStatus**
+- `pending`
+- `in_progress`
+- `done`
 
 ---
 
