@@ -93,7 +93,7 @@ NODE_ENV=dev
 
 ```
 
-### 4. Rodar mibrations do Prisma
+### 4. Rodar migrations do Prisma
 
 ```bash
 npx prisma migrate dev --name init
