@@ -70,7 +70,7 @@ export const updateTask = async (req: Request, res: Response) => {
       where: { id: Number(id) },
       data,
     });
-    res.json({ sucess: `Task ${id} atualizada:`, data });
+    res.status(201).json({ sucess: `Task ${id} atualizada:`, data });
   } catch (error) {
     console.error(error);
     res.status(500).json({ Error: "Erro ao atualizar tasks", error });
