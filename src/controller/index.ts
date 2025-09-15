@@ -13,9 +13,12 @@ export const index = (req: Request, res: Response) => {
       <body class="bg-gray-100 text-gray-800 font-sans">
         <div class="max-w-4xl mx-auto py-12 px-6">
           <!-- Título -->
-          <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">
-            API REST - Node.js + TypeScript
+          <h1 class="text-3xl font-bold text-center text-blue-600 mb-1">
+            API REST - Node.js + TypeScript 
           </h1>
+          <h2 class="text-center text-gray-600 mb-8">
+            por <a href="https://github.com/phlbarreto" class="text-black">Pedro Barreto</a>
+          </h2>
 
           <!-- Descrição -->
           <p class="text-center text-gray-600 mb-8">
