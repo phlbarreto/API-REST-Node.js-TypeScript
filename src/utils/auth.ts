@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { PrismaClient } from "../generated/prisma";
+import { PrismaClient } from "~/generated/prisma";
 
 const prisma = new PrismaClient();
 const inactivityTimeout = 1000 * 60 * 60 * 2; //2h inatividade

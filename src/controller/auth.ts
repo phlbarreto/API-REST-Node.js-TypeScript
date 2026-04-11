@@ -1,11 +1,11 @@
-import { loginSchema } from "../zod/userSchema";
 import { Request, Response } from "express";
-import { PrismaClient } from "../generated/prisma";
 import { z } from "zod";
-import { comparePassword, hashPassword } from "../utils/bcrypt";
-import { registerSchema } from "../zod/userSchema";
-import { createSession, validateSession } from "../utils/auth";
-import { clearCookieResponse, cookieResponse } from "../utils/cookies";
+import { loginSchema } from "~/zod/userSchema";
+import { PrismaClient } from "~/generated/prisma";
+import { comparePassword, hashPassword } from "~/utils/bcrypt";
+import { registerSchema } from "~/zod/userSchema";
+import { createSession, validateSession } from "~/utils/auth";
+import { clearCookieResponse, cookieResponse } from "~/utils/cookies";
 
 const prisma = new PrismaClient();
 
@@ -66,12 +66,12 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const validate = async (req: Request, res: Response) => {
-  const sessionId = req.cookies.session
+  const sessionId = req.cookies.session;
   console.log(sessionId);
   if (!sessionId) {
     return res.status(401).json({ Error: "Não autorizado!" });
   }
-  
+
   const clearCookie = clearCookieResponse(res);
   try {
     const user = await validateSession(sessionId);

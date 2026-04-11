@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { validateSession } from "../utils/auth";
+import { validateSession } from "~/utils/auth";
 
 export interface AuthenticatedRequest extends Request {
   user?: {

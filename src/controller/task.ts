@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "../generated/prisma";
-import { taskSchema, updateTaskSchema } from "../zod/taskSchema";
 import z from "zod";
-import { validateSession } from "../utils/auth";
+import { PrismaClient } from "~/generated/prisma";
+import { taskSchema, updateTaskSchema } from "~/zod/taskSchema";
+import { validateSession } from "~/utils/auth";
 
 const prisma = new PrismaClient();
 

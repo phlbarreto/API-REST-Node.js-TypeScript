@@ -1,13 +1,13 @@
 import { Router } from "express";
-import { index } from "../controller";
-import { login, register, validate } from "../controller/auth";
+import { index } from "~/controller";
+import { login, register, validate } from "~/controller/auth";
 import {
   deleteTask,
   getTasks,
   insertTask,
   updateTask,
-} from "../controller/task";
-import { authenticate } from "../middleware/authenticate";
+} from "~/controller/task";
+import { authenticate } from "~/middleware/authenticate";
 
 const router = Router();
 
