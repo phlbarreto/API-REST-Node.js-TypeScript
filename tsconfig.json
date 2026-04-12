@@ -13,7 +13,8 @@
     "outDir": "./dist",
     "rootDir": ".",
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": ["./src/*"],
+      "@/*": ["./prisma/*"]
     },
     "types": ["node"]
   },
