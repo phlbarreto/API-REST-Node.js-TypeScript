@@ -4,7 +4,7 @@
   "description": "- **Node.js + Express**\r - **TypeScript**\r - **PostgreSQL** (com Prisma)\r - **JWT** (autenticação)\r - **Zod** (validação de dados)",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run services:up && tsx --watch ./src/server.ts",
+    "dev": "npm run services:up && npm run migrations:up && tsx --watch ./src/server.ts",
     "services:up": "docker compose -f src/infra/compose.yaml up -d",
     "services:down": "docker compose -f src/infra/compose.yaml down -v",
     "migrations:create": "npx prisma migrate dev --name",
