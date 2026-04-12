@@ -11,6 +11,11 @@ export class CustomResponse {
       const { issues } = error;
       return getErrorMessage(issues);
     }
+
+    if (typeof error === "string") {
+      return error;
+    }
+
     function getErrorMessage(error: any[]) {
       const errorMessage: string[] = [];
       for (const erro of error) {
@@ -37,5 +42,13 @@ export class CustomResponse {
 
   success(message: string, data?: any) {
     this.response.status(200).json({ message, data });
+  }
+
+  created(message: string, data?: any) {
+    this.response.status(201).json({ message, data });
+  }
+
+  noContet(message?: string) {
+    this.response.status(204).json({ message: message || "Nada para exibir." });
   }
 }
