@@ -1,4 +1,6 @@
 import * as z from "zod";
+import { pt } from "zod/locales";
+z.config(pt());
 
 export const registerSchema = z.object({
   name: z
