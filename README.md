@@ -22,18 +22,19 @@
 
 ### User
 
-- `id`
+- `id` (uuid)
 - `name`
 - `email` (único)
 - `password` (hash)
 - `createdAt`
+- `updatedAt`
 
 ### UserSession
 
 - `id` (uuid)
 - `user_id`
 - `expires_at`
-- `last_act_at`
+- `last_active_at`
 
 ### Task
 
@@ -41,8 +42,9 @@
 - `title`
 - `description`
 - `status` (`TaskStatus`)
-- `userId` (FK → User)
-- `createdAt / updatedAt`
+- `userId` (`FK → User`)
+- `createdAt`
+- `updatedAt`
 
 ### Enums
 
@@ -57,13 +59,14 @@
 
 ### Auth
 
-- `POST /register` → Criar novo usuário
+- `GET /user` → Retorna dados do usuário logado
+- `POST /user` → Criar novo usuário
 - `POST /login` → Autenticação do usuário
-- `GET /validate` → Autenticação de sessão do usuário, retorna dados do usuário logado
 
 ### Tasks
 
 - `GET /tasks` → Listar todas as tarefas do usuário logado
+- `GET /tasks/:id` → Buscar tarefa pelo id do usuário logado
 - `POST /tasks` → Criar nova tarefa
 - `PATCH /tasks/:id` → Atualizar tarefa existente
 - `DELETE /tasks/:id` → Excluir tarefa
@@ -88,25 +91,23 @@ npm install
 ### 3. Configurar variáveis de ambiente
 
 ```bash
-DATABASE_URL="postgresql://user:password@localhost:5432/dbname?schema=public"
+DATABASE_URL=postgresql://local_user:local_password@localhost:5432/local_db?schema=public
 NODE_ENV=dev
-
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USER=local_user
+POSTGRES_DB=local_db
+POSTGRES_PASSWORD=local_password
 ```
 
-### 4. Rodar migrations do Prisma
-
-```bash
-npx prisma migrate dev --name init
-```
-
-### 5. Iniciar servidor para desenvolvimento
+### 4. Iniciar servidor para desenvolvimento
 
 ```bash
 npm run dev
 ```
 
-### O servidor ficará disponivel em:
+### API ficará disponivel em:
 
-```
+```bash
 http://localhost:5001
 ```
