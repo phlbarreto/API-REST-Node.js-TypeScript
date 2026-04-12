@@ -1,94 +1,104 @@
-import { Request, Response } from "express";
-import z from "zod";
-import { PrismaClient } from "~/generated/prisma";
-import { taskSchema, updateTaskSchema } from "~/zod/taskSchema";
-import { validateSession } from "~/utils/auth";
+import { Response } from "express";
+import { idTaskSchema, taskSchema, updateTaskSchema } from "~/zod/taskSchema";
+import { AuthenticatedRequest } from "~/middleware/authenticate";
+import { CustomResponse } from "~/models/response";
+import { create, deleteOne, findAll, findOne, update } from "~/models/task";
 
-const prisma = new PrismaClient();
-
-export const getTasks = async (req: Request, res: Response) => {
-  try {
-    const sessionId = req.cookies.session;
-    if (!sessionId) {
-      return res.status(401).json({
-        Error: "Não autorizado!",
-      });
-    }
-
-    const user = await validateSession(sessionId);
-    if (!user) {
-      return res.status(403).json({ Error: "Sessão inválida!" });
-    }
-
-    const tasks = await prisma.task.findMany({
-      where: {
-        user_id: Number(user.id),
-      },
-    });
-
-    if (tasks.length === 0) {
-      return res.status(204).json();
-    }
-    res.status(200).json({ tasks });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ Error: "Erro ao buscar tasks", error });
-  }
-};
-
-export const insertTask = async (req: Request, res: Response) => {
-  const { data, error } = taskSchema.safeParse(req.body);
-  if (error) {
-    const flatErr = z.flattenError(error).fieldErrors;
-    return res.status(400).json(flatErr);
-  }
-  try {
-    const task = await prisma.task.create({ data });
-    res.status(201).json({ sucess: `Task ${task.id} adicionada com sucesso!` });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ Error: "Erro ao inserir task", error });
-  }
-};
-
-export const updateTask = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  if (!id || isNaN(Number(id))) {
-    return res.status(400).json({ Error: "Id inválido!" });
-  }
-  const { error, data } = updateTaskSchema.safeParse(req.body);
-  if (error) {
-    const flatErr = z.flattenError(error).formErrors;
-    return res.status(400).json({
-      Error: "Nenhuma informação para atualizar!",
-      error: flatErr,
-    });
+export const getAllTasks = async (req: AuthenticatedRequest, res: Response) => {
+  const response = new CustomResponse(res);
+  const user = req.context?.user;
+  if (!user) {
+    response.unauthorized("Não autorizado!", "Faça o login.");
+    return;
   }
 
   try {
-    await prisma.task.update({
-      where: { id: Number(id) },
-      data,
-    });
-    res.status(201).json({ sucess: `Task ${id} atualizada:`, data });
+    const tasks = await findAll(user.id);
+    if (!tasks) {
+      response.noContet("Nenhuma tarefa encontrada.");
+      return;
+    }
+    response.success(`Total de ${tasks.length} tarefa(s) encontrada(s)`, tasks);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ Error: "Erro ao atualizar tasks", error });
+    console.error("Erro ao buscar tasks: ", error);
+    response.internalServerError();
   }
 };
 
-export const deleteTask = async (req: Request, res: Response) => {
+export const insertTask = async (req: AuthenticatedRequest, res: Response) => {
+  const response = new CustomResponse(res);
+  const result = taskSchema.safeParse(req.body);
+  if (result.error) {
+    response.badRequest(result.error);
+    return;
+  }
   try {
-    const { id } = req.params;
-    if (!id || isNaN(Number(id))) {
-      return res.status(400).json({ Error: "Id da task inválidos!" });
-    }
-    await prisma.task.delete({
-      where: { id: Number(id) },
-    });
-    res.status(200).json({ sucess: `Task ${id} deletada com sucesso!` });
+    const task = await create(result.data);
+    response.created(`Task ${task.id} adicionada com sucesso!`, task);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ Error: "Erro ao deletar task", error });
+    console.error("Erro ao inserir task: ", error);
+    response.internalServerError();
   }
 };
+
+export const updateTask = async (req: AuthenticatedRequest, res: Response) => {
+  const response = new CustomResponse(res);
+  const taskId = isValidTaskId(req, response);
+  if (!taskId) return;
+
+  const result = updateTaskSchema.safeParse(req.body);
+  if (result.error) {
+    response.badRequest(result.error);
+    return;
+  }
+
+  try {
+    const task = await update(taskId, result.data);
+    response.created(`Task ${taskId} atualizada.`, task);
+  } catch (error) {
+    console.error("Erro ao atualizar tasks: ", error);
+    response.internalServerError();
+  }
+};
+
+export const deleteTask = async (req: AuthenticatedRequest, res: Response) => {
+  const response = new CustomResponse(res);
+  const taskId = isValidTaskId(req, response);
+  if (!taskId) return;
+
+  try {
+    await deleteOne(taskId);
+    response.success(`Task ${taskId} deletada com sucesso!`);
+  } catch (error) {
+    console.error("Erro ao deletar task: ", error);
+    response.internalServerError();
+  }
+};
+
+export const getOneTask = async (req: AuthenticatedRequest, res: Response) => {
+  const response = new CustomResponse(res);
+  const taskId = isValidTaskId(req, response);
+  if (!taskId) return;
+
+  try {
+    const task = await findOne(taskId);
+    response.success(undefined, task);
+  } catch (error) {
+    console.error("Erro ao buscar task: ", error);
+    response.internalServerError();
+  }
+};
+
+function isValidTaskId(
+  req: AuthenticatedRequest,
+  response: CustomResponse,
+): false | string {
+  const result = idTaskSchema.safeParse(req.params);
+
+  if (result.error) {
+    response.badRequest(result.error);
+    return false;
+  }
+
+  return result.data.id;
+}
