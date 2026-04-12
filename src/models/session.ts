@@ -1,10 +1,8 @@
 import { randomUUID } from "node:crypto";
-import { PrismaClient } from "~/generated/prisma";
+import { env } from "~/config/env";
+import { prisma } from "~/infra/database";
 
-const prisma = new PrismaClient();
-const inactivityTimeout = 1000 * 60 * 60 * 2; //2h inatividade
-
-export const createSession = async (userId: number) => {
+export const createSession = async (userId: string) => {
   const sessionId = randomUUID();
   const now = new Date();
   try {
@@ -12,8 +10,8 @@ export const createSession = async (userId: number) => {
       data: {
         id: sessionId,
         user_id: userId,
-        expires_at: new Date(now.getTime() + inactivityTimeout),
-        last_act_at: now,
+        expires_at: new Date(now.getTime() + env.INACTIVITY_TIMEOUT),
+        last_active_at: now,
       },
     });
     return sessionId;
@@ -47,15 +45,10 @@ export const validateSession = async (sessionId: string) => {
     return false;
   }
 
-  const user = {
-    ...userDb,
-    password: "",
-  };
-
   const now = new Date();
-  const lastActive = new Date(String(session.last_act_at));
+  const lastActive = new Date(String(session.last_active_at));
 
-  if (now.getTime() - lastActive.getTime() > inactivityTimeout) {
+  if (now.getTime() - lastActive.getTime() > env.INACTIVITY_TIMEOUT) {
     await prisma.userSession.delete({
       where: {
         id: sessionId,
@@ -66,8 +59,17 @@ export const validateSession = async (sessionId: string) => {
 
   await prisma.userSession.update({
     where: { id: sessionId },
-    data: { last_act_at: now },
+    data: { last_active_at: now },
   });
 
-  return user;
+  const { email, id, name, createdAt } = userDb;
+  const secureObjectValue = { id, email, name, createdAt };
+  return secureObjectValue;
+};
+
+export type AuthenticatedUser = {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: Date;
 };

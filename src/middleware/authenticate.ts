@@ -1,30 +1,38 @@
 import { Request, Response, NextFunction } from "express";
-import { validateSession } from "~/utils/auth";
+import { CustomResponse } from "~/models/response";
+import { AuthenticatedUser, validateSession } from "~/models/session";
 
 export interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
+  context?: {
+    user: AuthenticatedUser;
   };
 }
 
 export async function authenticate(
   req: AuthenticatedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
+  const response = new CustomResponse(res);
   const sessionId = req.cookies.session;
-
   if (!sessionId) {
-    res.status(401).json({ message: "Não autorizado" });
+    response.unauthorized("Não autorizado", "Faça o login.");
     return;
   }
 
-  const session = await validateSession(sessionId);
+  const userOrError = await validateSession(sessionId);
 
-  if (!session) {
-    res.status(403).json({ message: "Sessão inválida ou expirada" });
+  if (!userOrError) {
+    response.unauthorized(
+      "Sessão inválida ou expirada.",
+      "Por favor, faça o login novamente.",
+    );
     return;
   }
-  req.user = { id: session.id.toString() };
+  if (!req.context) {
+    req.context = { user: userOrError };
+  }
+
+  req.context.user = userOrError;
   next();
 }

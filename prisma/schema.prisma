@@ -1,29 +1,29 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client"
+  output   = "./generated"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   name      String
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 
-  sessions     UserSession[]
-  Movimentacao Task[]
+  sessions UserSession[]
+  tasks    Task[]
 }
 
 model UserSession {
-  id          String   @id
-  user_id     Int
-  expires_at  DateTime
-  last_act_at DateTime
+  id             String   @id
+  user_id        String
+  expires_at     DateTime
+  last_active_at DateTime
 
   user User @relation(fields: [user_id], references: [id])
 }
@@ -35,12 +35,13 @@ enum TaskStatus {
 }
 
 model Task {
-  id          Int        @id @default(autoincrement())
+  id          String     @id @default(uuid())
   title       String
   description String
   status      TaskStatus @default(pending)
-  user_id     Int
+  user_id     String
   created_at  DateTime   @default(now())
+  updated_at   DateTime   @default(now())
 
   user User @relation(fields: [user_id], references: [id])
 }

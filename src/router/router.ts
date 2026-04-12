@@ -1,23 +1,26 @@
 import { Router } from "express";
 import { index } from "~/controller";
-import { login, register, validate } from "~/controller/auth";
+import { authentication, register, getUser } from "~/controller/user";
 import {
   deleteTask,
-  getTasks,
+  getAllTasks,
+  getOneTask,
   insertTask,
   updateTask,
 } from "~/controller/task";
+
 import { authenticate } from "~/middleware/authenticate";
 
 const router = Router();
 
 router.get("/", index);
 
-router.post("/register", register);
-router.post("/login", login);
-router.get("/validate", validate);
+router.post("/login", authentication);
+router.post("/user", register);
+router.get("/user", getUser);
 
-router.get("/tasks", authenticate, getTasks);
+router.get("/tasks", authenticate, getAllTasks);
+router.get("/tasks/:id", authenticate, getOneTask)
 router.post("/tasks", authenticate, insertTask);
 router.patch("/tasks/:id", authenticate, updateTask);
 router.delete("/tasks/:id", authenticate, deleteTask);
