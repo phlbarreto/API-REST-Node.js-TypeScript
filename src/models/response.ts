@@ -40,7 +40,7 @@ export class CustomResponse {
     this.response.status(400).json({ message: errorMessage });
   }
 
-  success(message: string, data?: any) {
+  success(message: string | undefined = undefined, data?: any) {
     this.response.status(200).json({ message, data });
   }
 
