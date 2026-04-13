@@ -4,11 +4,13 @@
   "description": "- **Node.js + Express**\r - **TypeScript**\r - **PostgreSQL** (com Prisma)\r - **JWT** (autenticação)\r - **Zod** (validação de dados)",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run services:up && npm run migrations:up && tsx --watch ./src/server.ts",
     "services:up": "docker compose -f src/infra/compose.yaml up -d",
+    "services:wait:database": "node src/infra/scripts/wait-for-postgres.ts",
+    "migrations:up": "dotenv -e .env -- npx prisma migrate dev",
+    "server:watch": "tsx --watch src/server.ts",
+    "dev": "npm run services:up && npm run services:wait:database && npm run migrations:up && npm run server:watch",
     "services:down": "docker compose -f src/infra/compose.yaml down -v",
     "migrations:create": "npx prisma migrate dev --name",
-    "migrations:up": "npx prisma migrate dev",
     "start": "node ./dist/server.js",
     "postinstall": "prisma generate"
   },
@@ -30,6 +32,7 @@
     "cookie-parser": "1.4.7",
     "cors": "2.8.5",
     "dotenv": "17.2.2",
+    "dotenv-expand": "12.0.3",
     "express": "5.1.0",
     "zod": "4.1.8"
   },
@@ -38,6 +41,8 @@
     "@types/cookie-parser": "1.4.9",
     "@types/cors": "2.8.19",
     "@types/express": "5.0.3",
+    "concurrently": "9.2.1",
+    "dotenv-cli": "11.0.0",
     "prisma": "7.7.0",
     "tsx": "4.21.0"
   },
