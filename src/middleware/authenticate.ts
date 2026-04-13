@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { CustomResponse } from "~/models/response";
+import { CookieResponse } from "~/models/cookieResponse";
 import { AuthenticatedUser, validateSession } from "~/models/session";
 
 export interface AuthenticatedRequest extends Request {
@@ -13,7 +13,7 @@ export async function authenticate(
   res: Response,
   next: NextFunction,
 ) {
-  const response = new CustomResponse(res);
+  const response = new CookieResponse(res);
   const sessionId = req.cookies.session;
   if (!sessionId) {
     response.unauthorized("Não autorizado", "Faça o login.");
@@ -23,6 +23,7 @@ export async function authenticate(
   const userOrError = await validateSession(sessionId);
 
   if (!userOrError) {
+    response.clearCookie("session");
     response.unauthorized(
       "Sessão inválida ou expirada.",
       "Por favor, faça o login novamente.",
