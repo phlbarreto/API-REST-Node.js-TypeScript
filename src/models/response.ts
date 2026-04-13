@@ -52,7 +52,7 @@ export class CustomResponse {
     this.response.status(201).json({ message, data });
   }
 
-  noContet(message?: string) {
+  noContent(message?: string) {
     this.response.status(204).json({ message: message || "Nada para exibir." });
   }
 }

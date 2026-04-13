@@ -14,7 +14,7 @@ export const getAllTasks = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const tasks = await findAll(user.id);
     if (!tasks) {
-      response.noContet("Nenhuma tarefa encontrada.");
+      response.noContent("Nenhuma tarefa encontrada.");
       return;
     }
     response.success(`Total de ${tasks.length} tarefa(s) encontrada(s)`, tasks);
@@ -145,7 +145,7 @@ async function findTaskOrResponseNoContent(
 ) {
   const task = await findOne(taskId);
   if (!task) {
-    response.noContet("Nenhuma tarefa encontrada para o id enviado.");
+    response.noContent("Nenhuma tarefa encontrada para o id enviado.");
     return false;
   }
   return task;
