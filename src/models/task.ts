@@ -6,16 +6,27 @@ export const findAll = async (userId: string) => {
     where: {
       user_id: userId,
     },
+    take: 15,
+    orderBy: {
+      updated_at: "desc",
+    },
   });
-  if (tasks.length === 0) {
-    return null;
-  }
+
+  if (tasks.length === 0) return null;
 
   return tasks;
 };
 
-export const create = async (data: Task) => {
-  const task = await prisma.task.create({ data });
+export const create = async (providedData: Task, user_id: string) => {
+  const data = {
+    ...providedData,
+    user_id,
+  };
+
+  const task = await prisma.task.create({
+    data,
+  });
+
   return task;
 };
 
@@ -23,17 +34,22 @@ export const findOne = async (id: string) => {
   const task = await prisma.task.findFirst({
     where: { id },
   });
+
+  if (!task) return null;
+
   return task;
 };
 
-export const update = async (id: string, data: UpdateTask) => {
+export const update = async (id: string, providedData: UpdateTask) => {
   const now = new Date();
+  const data = {
+    ...providedData,
+    updated_at: now,
+  };
+
   const updatedTask = await prisma.task.update({
     where: { id },
-    data: {
-      ...data,
-      updated_at: now,
-    },
+    data,
   });
   return updatedTask;
 };

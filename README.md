@@ -13,8 +13,9 @@
 
 ### Auxiliares
 
-- **Dotenv** (variaveis de ambiente)
+- **Dotenv e Dotenv-Expand** (variaveis de ambiente)
 - **CORS** (controle de acesso entre dominios)
+- **Docker** (com PostgreSQL para desenvolvimento local)
 
 ---
 
@@ -84,6 +85,8 @@ cd API-REST-Node.js-TypeScript
 
 ### 2. Instalar dependências
 
+- É necessário ter o docker instalado para desenvolvimento local.
+
 ```bash
 npm install
 ```
@@ -91,7 +94,7 @@ npm install
 ### 3. Configurar variáveis de ambiente
 
 ```bash
-DATABASE_URL=postgresql://local_user:local_password@localhost:5432/local_db?schema=public
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
 NODE_ENV=dev
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432

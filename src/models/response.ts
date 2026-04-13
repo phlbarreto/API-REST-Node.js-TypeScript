@@ -31,6 +31,10 @@ export class CustomResponse {
       .json({ message: message || "Ocorreu um erro inesperado" });
   }
 
+  forbidden(message?: string) {
+    this.response.status(403).json({ message: message || "Acesso negado." });
+  }
+
   unauthorized(message: string, action: string) {
     this.response.status(401).json({ message, action });
   }
@@ -40,15 +44,15 @@ export class CustomResponse {
     this.response.status(400).json({ message: errorMessage });
   }
 
-  success(message: string | undefined = undefined, data?: any) {
-    this.response.status(200).json({ message, data });
+  success(message: string, data?: any) {
+    this.response.status(200).json({ message: message || undefined, data });
   }
 
   created(message: string, data?: any) {
     this.response.status(201).json({ message, data });
   }
 
-  noContet(message?: string) {
+  noContent(message?: string) {
     this.response.status(204).json({ message: message || "Nada para exibir." });
   }
 }
