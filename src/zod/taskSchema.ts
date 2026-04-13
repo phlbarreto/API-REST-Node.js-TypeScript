@@ -5,8 +5,7 @@ z.config(pt());
 export const taskSchema = z.object({
   title: z.string("Coluna 'title' é obrigatório!"),
   description: z.string("coluna 'description' é obrigatória!"),
-  status: z.enum(["pending", "in_progress", "done"]),
-  user_id: z.string("Coluna 'user_id' é obrigatório!"),
+  status: z.enum(["pending", "in_progress", "done"]).optional(),
 });
 
 export type Task = z.infer<typeof taskSchema>;
