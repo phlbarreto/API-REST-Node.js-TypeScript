@@ -16,7 +16,7 @@ export async function authenticate(
   const response = new CookieResponse(res);
   const sessionId = req.cookies.session;
   if (!sessionId) {
-    response.unauthorized("Não autorizado", "Faça o login.");
+    response.unauthorized("Faça o login.");
     return;
   }
 
@@ -25,8 +25,8 @@ export async function authenticate(
   if (!userOrError) {
     response.clearCookie("session");
     response.unauthorized(
-      "Sessão inválida ou expirada.",
       "Por favor, faça o login novamente.",
+      "Sessão inválida ou expirada.",
     );
     return;
   }

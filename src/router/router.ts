@@ -1,13 +1,7 @@
 import { Router } from "express";
 import { index } from "~/controller";
-import { authentication, register, getUser } from "~/controller/user";
-import {
-  deleteTask,
-  getAllTasks,
-  getOneTask,
-  insertTask,
-  updateTask,
-} from "~/controller/task";
+import * as userCtrl from "~/controller/user";
+import * as taskCtrl from "~/controller/task";
 
 import { authenticate } from "~/middleware/authenticate";
 
@@ -15,14 +9,14 @@ const router = Router();
 
 router.get("/", index);
 
-router.post("/login", authentication);
-router.post("/user", register);
-router.get("/user", getUser);
+router.post("/login", userCtrl.authentication);
+router.post("/user", userCtrl.register);
+router.get("/user", userCtrl.getUser);
 
-router.get("/tasks", authenticate, getAllTasks);
-router.get("/tasks/:id", authenticate, getOneTask)
-router.post("/tasks", authenticate, insertTask);
-router.patch("/tasks/:id", authenticate, updateTask);
-router.delete("/tasks/:id", authenticate, deleteTask);
+router.get("/tasks", authenticate, taskCtrl.getAllTasks);
+router.get("/tasks/:id", authenticate, taskCtrl.getOneTask);
+router.post("/tasks", authenticate, taskCtrl.insertTask);
+router.patch("/tasks/:id", authenticate, taskCtrl.updateTask);
+router.delete("/tasks/:id", authenticate, taskCtrl.deleteTask);
 
 export default router;

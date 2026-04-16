@@ -1,5 +1,5 @@
 import { CookieOptions } from "express";
-import { CustomResponse } from "./response";
+import { CustomResponse } from "./customResponse";
 import { env } from "~/config/env";
 
 export class CookieResponse extends CustomResponse {

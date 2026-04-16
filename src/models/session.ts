@@ -5,65 +5,46 @@ import { prisma } from "~/infra/database";
 export const createSession = async (userId: string) => {
   const sessionId = randomUUID();
   const now = new Date();
-  try {
-    await prisma.userSession.create({
-      data: {
-        id: sessionId,
-        user_id: userId,
-        expires_at: new Date(now.getTime() + env.INACTIVITY_TIMEOUT),
-        last_active_at: now,
-      },
-    });
-    return sessionId;
-  } catch (error) {
-    return null;
-  }
+
+  await prisma.userSession.create({
+    data: {
+      id: sessionId,
+      user_id: userId,
+      expires_at: new Date(now.getTime() + env.INACTIVITY_TIMEOUT),
+      last_active_at: now,
+    },
+  });
+  return sessionId;
 };
 
 export const validateSession = async (sessionId: string) => {
-  if (!sessionId) {
-    return false;
-  }
-
   const session = await prisma.userSession.findUnique({
     where: {
       id: sessionId,
     },
   });
-
-  if (!session) {
-    return false;
-  }
+  if (!session) return false;
 
   const userDb = await prisma.user.findUnique({
     where: {
       id: session.user_id,
     },
   });
-
-  if (!userDb) {
-    return false;
-  }
+  if (!userDb) return false;
 
   const now = new Date();
   const lastActive = new Date(String(session.last_active_at));
 
-  if (now.getTime() - lastActive.getTime() > env.INACTIVITY_TIMEOUT) {
-    await prisma.userSession.delete({
-      where: {
-        id: sessionId,
-      },
-    });
+  if (now.getTime() - lastActive.getTime() > env.INACTIVITY_TIMEOUT)
     return false;
-  }
 
   await prisma.userSession.update({
     where: { id: sessionId },
     data: { last_active_at: now },
   });
 
-  const { email, id, name, createdAt } = userDb;
-  const secureObjectValue = { id, email, name, createdAt };
+  const { email, id, name, createdAt, updatedAt } = userDb;
+  const secureObjectValue = { id, email, name, createdAt, updatedAt };
   return secureObjectValue;
 };
 
@@ -72,4 +53,5 @@ export type AuthenticatedUser = {
   email: string;
   name: string;
   createdAt: Date;
+  updatedAt: Date;
 };
