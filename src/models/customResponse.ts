@@ -9,14 +9,14 @@ export class CustomResponse {
   errorHandler(error: any) {
     if (error.name === "ZodError") {
       const { issues } = error;
-      return getErrorMessage(issues);
+      return setErrorMessage(issues);
     }
 
     if (typeof error === "string") {
       return error;
     }
 
-    function getErrorMessage(error: any[]) {
+    function setErrorMessage(error: any[]) {
       const errorMessage: string[] = [];
       for (const erro of error) {
         errorMessage.push(erro.message);
@@ -35,8 +35,11 @@ export class CustomResponse {
     this.response.status(403).json({ message: message || "Acesso negado." });
   }
 
-  unauthorized(message: string, action: string) {
-    this.response.status(401).json({ message, action });
+  unauthorized(action?: string, message?: string) {
+    this.response.status(401).json({
+      message: message || "Não autorizado.",
+      action: action || "Faça o login novamente.",
+    });
   }
 
   badRequest(error: any) {
@@ -44,15 +47,15 @@ export class CustomResponse {
     this.response.status(400).json({ message: errorMessage });
   }
 
-  success(message: string, data?: any) {
-    this.response.status(200).json({ message: message || undefined, data });
+  success(data: object) {
+    this.response.status(200).json(data);
   }
 
   created(message: string, data?: any) {
     this.response.status(201).json({ message, data });
   }
 
-  noContent(message?: string) {
-    this.response.status(204).json({ message: message || "Nada para exibir." });
+  noContent() {
+    this.response.status(204);
   }
 }
