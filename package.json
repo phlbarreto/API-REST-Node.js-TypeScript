@@ -14,10 +14,9 @@
     "migrations:reset": "dotenv -e .env -- prisma migrate reset --force",
     "migrations:generate": "prisma generate",
     "server:watch": "tsx --watch src/server.ts",
-    "start": "node ./dist/server.js",
-    "test": "npm run services:up && npm run migrations:up && npm run migrations:generate && concurrently -k -s first -n \"server,test\" --hide server \"tsx src/server.ts\" \"vitest",
-    "test:watch": "vitest",
-    "postinstall": "npm run migrations:generate"
+    "start": "npm run migrations:generate && node ./dist/server.js",
+    "test": "npm run services:up && npm run migrations:up && npm run migrations:generate && concurrently -k -s first -n \"server,test\" --hide server \"tsx src/server.ts\" vitest",
+    "test:watch": "vitest"
   },
   "repository": {
     "type": "git",

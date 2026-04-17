@@ -8,8 +8,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version-file: "package.json"
-      - run: npm ci
-      - run: npm test
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup CI Environment
+        run: |
+          touch .env
+          echo "DATABASE_URL=postgresql://local_user:local_password@localhost:5432/local_db?schema=public" >> .env
+
+      - name: Run Infrastructure & Tests
+        run: |
+          docker compose -f src/infra/compose.yaml up -d
+          npx prisma migrate deploy
+          npx prisma generate
+          npx vitest run
+        env:
+          POSTGRES_USER: local_user
+          POSTGRES_PASSWORD: local_password
+          POSTGRES_DB: local_db
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+          DATABASE_URL: postgresql://local_user:local_password@localhost:5432/local_db?schema=public
