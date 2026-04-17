@@ -24,14 +24,9 @@ jobs:
       - name: Run Infrastructure & Tests
         run: |
           docker compose -f src/infra/compose.yaml up -d
+          docker ps -a
+          docker logs postgres-task
           npx tsx src/infra/scripts/wait-for-postgres.ts
           npx prisma migrate deploy
           npx prisma generate
           npx vitest run
-        env:
-          POSTGRES_USER: local_user
-          POSTGRES_PASSWORD: local_password
-          POSTGRES_DB: local_db
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
-          DATABASE_URL: postgresql://local_user:local_password@localhost:5432/local_db?schema=public
