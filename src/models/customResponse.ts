@@ -44,18 +44,18 @@ export class CustomResponse {
 
   badRequest(error: any) {
     const errorMessage = this.errorHandler(error);
-    this.response.status(400).json({ message: errorMessage });
+    this.response.status(400).json({ error: errorMessage });
   }
 
   success(data: object) {
     this.response.status(200).json(data);
   }
 
-  created(message: string, data?: any) {
-    this.response.status(201).json({ message, data });
+  created(data?: object) {
+    this.response.status(201).json(data);
   }
 
   noContent() {
-    this.response.status(204);
+    this.response.status(204).json();
   }
 }

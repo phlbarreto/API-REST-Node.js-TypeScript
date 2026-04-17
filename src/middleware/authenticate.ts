@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { CookieResponse } from "~/models/cookieResponse";
-import { AuthenticatedUser, validateSession } from "~/models/session";
+import { CookieResponse } from "~/models/cookieResponse.js";
+import { AuthenticatedUser, validateSession } from "~/models/session.js";
 
 export interface AuthenticatedRequest extends Request {
   context?: {

@@ -1,13 +1,12 @@
 import { Request, Response } from "express";
-import { loginSchema } from "~/zod/userSchema";
-import { registerSchema } from "~/zod/userSchema";
-import { AuthenticatedUser, validateSession } from "~/models/session";
-import { registerUser, login } from "~/models/user";
-import { CustomResponse } from "~/models/customResponse";
-import { CookieResponse } from "~/models/cookieResponse";
+import { loginSchema } from "~/zod/userSchema.js";
+import { registerSchema } from "~/zod/userSchema.js";
+import { AuthenticatedUser, validateSession } from "~/models/session.js";
+import { registerUser, login } from "~/models/user.js";
+import { CookieResponse } from "~/models/cookieResponse.js";
 
 export const register = async (req: Request, res: Response) => {
-  const response = new CustomResponse(res);
+  const response = new CookieResponse(res);
   const result = registerSchema.safeParse(req.body);
 
   if (result.error) {
@@ -17,7 +16,7 @@ export const register = async (req: Request, res: Response) => {
 
   try {
     const registeredUser = await registerUser(result.data);
-    response.success({
+    response.created({
       message: `Usuário '${registeredUser.name}' criado com sucesso!`,
     });
   } catch (error: any) {
@@ -29,14 +28,14 @@ export const register = async (req: Request, res: Response) => {
 export const authentication = async (req: Request, res: Response) => {
   const result = loginSchema.safeParse(req.body);
 
-  const response = new CustomResponse(res);
+  const response = new CookieResponse(res);
   if (result.error) {
     response.badRequest(result.error);
     return;
   }
   try {
     const sessionObject = await login(result.data);
-    if (!sessionObject.success) {
+    if (!sessionObject) {
       response.unauthorized(
         "Verifique os dados enviados e tente novamente",
         "Email ou senha inválido",
@@ -44,8 +43,8 @@ export const authentication = async (req: Request, res: Response) => {
       return;
     }
 
-    new CookieResponse(res).setCookie("session", sessionObject.session);
-    response.success({ message: "Usuário autenticado!" });
+    new CookieResponse(res).setCookie("session", sessionObject.id);
+    response.created({ message: "Usuário autenticado!" });
   } catch (error) {
     console.error("Erro insperado ao efetuar login: ", error);
     response.internalServerError();

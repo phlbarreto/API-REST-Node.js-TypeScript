@@ -1,12 +1,12 @@
 import { randomUUID } from "node:crypto";
-import { env } from "~/config/env";
-import { prisma } from "~/infra/database";
+import { env } from "~/config/env.js";
+import { prisma } from "~/infra/database.js";
 
 export const createSession = async (userId: string) => {
   const sessionId = randomUUID();
   const now = new Date();
 
-  await prisma.userSession.create({
+  const session = await prisma.userSession.create({
     data: {
       id: sessionId,
       user_id: userId,
@@ -14,7 +14,7 @@ export const createSession = async (userId: string) => {
       last_active_at: now,
     },
   });
-  return sessionId;
+  return session;
 };
 
 export const validateSession = async (sessionId: string) => {
@@ -43,8 +43,8 @@ export const validateSession = async (sessionId: string) => {
     data: { last_active_at: now },
   });
 
-  const { email, id, name, createdAt, updatedAt } = userDb;
-  const secureObjectValue = { id, email, name, createdAt, updatedAt };
+  const { email, id, name, created_at, updated_at } = userDb;
+  const secureObjectValue = { id, email, name, created_at, updated_at };
   return secureObjectValue;
 };
 
@@ -52,6 +52,8 @@ export type AuthenticatedUser = {
   id: string;
   email: string;
   name: string;
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: Date;
+  updated_at: Date;
 };
+
+export type UserSession = Awaited<ReturnType<typeof createSession>>;
