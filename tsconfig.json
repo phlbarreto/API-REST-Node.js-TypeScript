@@ -14,10 +14,11 @@
     "rootDir": ".",
     "paths": {
       "~/*": ["./src/*"],
-      "@/*": ["./prisma/*"]
+      "@/*": ["./prisma/*"],
+      "$/*": ["./tests/*"]
     },
-    "types": ["node"]
+    "types": ["node", "vitest/globals"]
   },
-  "include": ["src/**/*"],
+  "include": ["src", "tests", "prisma"],
   "exclude": ["node_modules", "dist"]
 }
