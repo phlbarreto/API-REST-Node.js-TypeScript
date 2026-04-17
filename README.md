@@ -1,5 +1,7 @@
 # API-REST-Node.js-TypeScript
 
+- API node.js para manipulação de tarefas com cobertura de 100% de testes automatizados.
+
 ## 🚀 Tecnologias
 
 ### Principais
@@ -17,6 +19,11 @@
 - **CORS** (controle de acesso entre dominios)
 - **Docker** (com PostgreSQL para desenvolvimento local)
 
+### Testes Automatizados
+
+- **Vitest** (criação dos testes)
+- **Faker-js** (Mock de dados)
+
 ---
 
 ## 🗂️ Estrutura de Entidades
@@ -27,13 +34,14 @@
 - `name`
 - `email` (único)
 - `password` (hash)
-- `createdAt`
-- `updatedAt`
+- `created_at`
+- `updated_at`
 
 ### UserSession
 
 - `id` (uuid)
 - `user_id`
+- `created_at`
 - `expires_at`
 - `last_active_at`
 
@@ -44,8 +52,8 @@
 - `description`
 - `status` (`TaskStatus`)
 - `userId` (`FK → User`)
-- `createdAt`
-- `updatedAt`
+- `created_at`
+- `updated_at`
 
 ### Enums
 
