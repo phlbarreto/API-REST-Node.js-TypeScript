@@ -12,7 +12,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: "package.json"
-          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -25,6 +24,7 @@ jobs:
       - name: Run Infrastructure & Tests
         run: |
           docker compose -f src/infra/compose.yaml up -d
+          npx tsx src/infra/scripts/wait-for-postgres.ts
           npx prisma migrate deploy
           npx prisma generate
           npx vitest run

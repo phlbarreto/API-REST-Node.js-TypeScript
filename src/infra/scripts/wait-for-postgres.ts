@@ -11,6 +11,7 @@ function checkPostgres() {
     console.log("\nPostgres pronto!\n");
   }
 }
+console.log('wait-for-postgres: Iniciou o CI');
 
 process.stdout.write("\n\nAguardando Postgres");
 
