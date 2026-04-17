@@ -1,7 +1,7 @@
-import { LoginInput, UserInput } from "~/zod/userSchema";
-import { createSession } from "~/models/session";
-import { comparePassword, hashPassword } from "./password";
-import { prisma } from "~/infra/database";
+import { LoginInput, UserInput } from "~/zod/userSchema.js";
+import { createSession } from "~/models/session.js";
+import { comparePassword, hashPassword } from "./password.js";
+import { prisma } from "~/infra/database.js";
 
 export const registerUser = async (userInputValues: UserInput) => {
   const password = await hashPassword(userInputValues.password);
@@ -13,29 +13,21 @@ export const registerUser = async (userInputValues: UserInput) => {
 };
 
 export const login = async (userInputValues: LoginInput) => {
-  const result = {
-    session: null,
-    success: false,
-  };
-
   const user = await prisma.user.findUnique({
     where: { email: userInputValues.email },
   });
 
-  if (!user) {
-    return result;
-  }
+  if (!user) return false;
 
   const isValid = await comparePassword(
     userInputValues.password,
     user.password,
   );
 
-  if (!isValid) {
-    return result;
-  }
+  if (!isValid) return false;
 
   const session = await createSession(user.id);
+  if (!session) return false;
 
-  return { session, success: true };
+  return session;
 };

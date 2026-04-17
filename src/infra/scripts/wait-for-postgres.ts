@@ -1,17 +1,26 @@
 import { exec } from "node:child_process";
 
+let attempts = 0;
+const MAX_ATTEMPTS = 30;
+
 function checkPostgres() {
-  exec("docker exec postgres-task pg_isready --host localhost", handleReturn);
-  function handleReturn(error: any, stdout: any) {
-    if (stdout.search("accepting connections") === -1) {
-      process.stdout.write(".");
-      checkPostgres();
-      return;
+  exec("docker exec postgres-task pg_isready", (error, stdout) => {
+    attempts++;
+
+    if (stdout.includes("accepting connections")) {
+      console.log("\n✅ Postgres pronto para conexões!");
+      process.exit(0);
     }
-    console.log("\nPostgres pronto!\n");
-  }
+
+    if (attempts >= MAX_ATTEMPTS) {
+      console.error("\n❌ Erro: O Postgres não ficou pronto a tempo.");
+      process.exit(1);
+    }
+
+    process.stdout.write(".");
+    setTimeout(checkPostgres, 1000);
+  });
 }
 
-process.stdout.write("\n\nAguardando Postgres");
-
+process.stdout.write("\n⏳ Aguardando Postgres");
 checkPostgres();

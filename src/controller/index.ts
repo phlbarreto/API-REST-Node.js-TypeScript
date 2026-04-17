@@ -32,12 +32,20 @@ export const index = (req: Request, res: Response) => {
             <ul class="list-disc list-inside space-y-1">
               <li>Node.js + Express</li>
               <li>TypeScript</li>
-              <li>PostgreSQL (Prisma)</li>
+              <li>PostgreSQL (com Prisma)</li>
               <li>Bcrypt (hash de senhas)</li>
               <li>Zod (validação)</li>
               <li>CookieParser (sessões HttpOnly)</li>
-              <li>Dotenv + CORS</li>
             </ul>
+          </section>
+
+          <section class="mb-10">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">🧰 Auxiliares</h2>
+            <ul class="list-disc list-inside space-y-1">
+              <li>Dotenv + Dotenv Expand</li>
+              <li>CORS</li>
+              <li>Docker (banco de dados local)</li>
+              </ul>
           </section>
 
           <!-- Estrutura -->
@@ -53,7 +61,8 @@ export const index = (req: Request, res: Response) => {
                   <li>name</li>
                   <li>email (único)</li>
                   <li>password (hash)</li>
-                  <li>createdAt</li>
+                  <li>created_at</li>
+                  <li>updated_at</li>
                 </ul>
               </div>
               <div class="bg-white shadow rounded-lg p-4">
@@ -64,7 +73,7 @@ export const index = (req: Request, res: Response) => {
                   <li>description</li>
                   <li>status TaskStatus</li>
                   <li>userId (FK → User)</li>
-                  <li>createdAt / updatedAt</li>
+                  <li>created_at / updatedAt</li>
                 </ul>
               </div>
               <div class="bg-white shadow rounded-lg p-4">
@@ -84,13 +93,14 @@ export const index = (req: Request, res: Response) => {
             <div class="bg-white shadow rounded-lg p-4">
               <h3 class="font-bold text-green-500 mb-2">Auth</h3>
               <ul class="list-disc list-inside text-sm mb-4">
-                <li>POST /register</li>
+                <li>GET /user</li>
+                <li>POST /user</li>
                 <li>POST /login</li>
-                <li>GET /validate</li>
               </ul>
               <h3 class="font-bold text-green-500 mb-2">Tasks</h3>
               <ul class="list-disc list-inside text-sm">
                 <li>GET /tasks</li>
+                <li>GET /tasks/:id</li>
                 <li>POST /tasks</li>
                 <li>PUT /tasks/:id</li>
                 <li>DELETE /tasks/:id</li>

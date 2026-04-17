@@ -1,10 +1,14 @@
 import { Response } from "express";
-import { Task } from "@/generated/client";
-import { idTaskSchema, taskSchema, updateTaskSchema } from "~/zod/taskSchema";
-import { AuthenticatedRequest } from "~/middleware/authenticate";
-import { canRequest } from "~/models/authorization";
-import { CustomResponse } from "~/models/customResponse";
-import { taskModel } from "~/models/task";
+import { Task } from "@/generated/client.js";
+import {
+  idTaskSchema,
+  taskSchema,
+  updateTaskSchema,
+} from "~/zod/taskSchema.js";
+import { AuthenticatedRequest } from "~/middleware/authenticate.js";
+import { canRequest } from "~/models/authorization.js";
+import { CustomResponse } from "~/models/customResponse.js";
+import { taskModel } from "~/models/task.js";
 
 export const getAllTasks = async (req: AuthenticatedRequest, res: Response) => {
   const response = new CustomResponse(res);
@@ -40,7 +44,10 @@ export const insertTask = async (req: AuthenticatedRequest, res: Response) => {
 
   try {
     const task = await taskModel.create(result.data, user.id);
-    response.created(`Task ${task.id} adicionada com sucesso!`, task);
+    response.created({
+      message: `Task ${task.id} adicionada com sucesso!`,
+      data: task,
+    });
   } catch (error) {
     console.error("Erro ao inserir task: ", error);
     response.internalServerError();
@@ -65,7 +72,10 @@ export const updateTask = async (req: AuthenticatedRequest, res: Response) => {
     if (!userCanRequest(req, response, task)) return;
 
     const updatedTask = await taskModel.update(taskId, result.data);
-    response.created(`Task ${taskId} atualizada.`, updatedTask);
+    response.created({
+      message: `Task ${taskId} atualizada.`,
+      data: updatedTask,
+    });
   } catch (error) {
     console.error("Erro ao atualizar tasks: ", error);
     response.internalServerError();

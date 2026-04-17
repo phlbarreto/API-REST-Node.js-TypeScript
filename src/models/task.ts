@@ -1,6 +1,6 @@
-import { TaskDelegate } from "@/generated/models";
-import { prisma } from "~/infra/database";
-import { Task as TaskEnt, UpdateTask } from "~/zod/taskSchema";
+import { TaskDelegate } from "@/generated/models.js";
+import { prisma } from "~/infra/database.js";
+import { Task as TaskEnt, UpdateTask } from "~/zod/taskSchema.js";
 
 class TaskModel {
   private model: TaskDelegate;

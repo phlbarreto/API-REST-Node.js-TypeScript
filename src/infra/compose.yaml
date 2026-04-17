@@ -1,8 +1,10 @@
 services:
   database-task:
     container_name: "postgres-task"
-    image: "postgres:18-alpine3.22"
-    env_file:
-      - ../../.env
+    image: "postgres:17-alpine"
+    environment:
+      - POSTGRES_PASSWORD=local_password
+      - POSTGRES_USER=local_user
+      - POSTGRES_DB=local_db
     ports:
       - "5432:5432"

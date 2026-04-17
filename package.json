@@ -3,16 +3,20 @@
   "version": "1.0.0",
   "description": "- **Node.js + Express**\r - **TypeScript**\r - **PostgreSQL** (com Prisma)\r - **JWT** (autenticação)\r - **Zod** (validação de dados)",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "services:up": "docker compose -f src/infra/compose.yaml up -d",
-    "services:wait:database": "node src/infra/scripts/wait-for-postgres.ts",
-    "migrations:up": "dotenv -e .env -- npx prisma migrate dev",
-    "server:watch": "tsx --watch src/server.ts",
-    "dev": "npm run services:up && npm run services:wait:database && npm run migrations:up && npm run server:watch",
+    "dev": "npm run services:up && npm run migrations:up && npm run migrations:generate && npm run server:watch",
+    "services:up": "docker compose -f src/infra/compose.yaml up -d && npm run services:wait:database ",
     "services:down": "docker compose -f src/infra/compose.yaml down -v",
-    "migrations:create": "npx prisma migrate dev --name",
-    "start": "node ./dist/server.js",
-    "postinstall": "prisma generate"
+    "services:wait:database": "node src/infra/scripts/wait-for-postgres.ts",
+    "migrations:create": "dotenv -e .env -- prisma migrate dev --name",
+    "migrations:up": "dotenv -e .env -- prisma migrate dev",
+    "migrations:reset": "dotenv -e .env -- prisma migrate reset --force",
+    "migrations:generate": "prisma generate",
+    "server:watch": "tsx --watch src/server.ts",
+    "start": "npm run migrations:generate && node ./dist/server.js",
+    "test": "npm run services:up && npm run migrations:up && npm run migrations:generate && concurrently -k -s first -n \"server,test\" --hide server \"tsx src/server.ts\" vitest",
+    "test:watch": "vitest"
   },
   "repository": {
     "type": "git",
@@ -37,14 +41,18 @@
     "zod": "4.1.8"
   },
   "devDependencies": {
+    "@faker-js/faker": "10.4.0",
+    "@types/async-retry": "^1.4.9",
     "@types/bcrypt": "6.0.0",
     "@types/cookie-parser": "1.4.9",
     "@types/cors": "2.8.19",
     "@types/express": "5.0.3",
+    "async-retry": "1.3.3",
     "concurrently": "9.2.1",
     "dotenv-cli": "11.0.0",
     "prisma": "7.7.0",
-    "tsx": "4.21.0"
+    "tsx": "4.21.0",
+    "vitest": "4.1.4"
   },
   "engines": {
     "node": "24"

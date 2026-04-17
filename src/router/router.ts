@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { index } from "~/controller";
-import * as userCtrl from "~/controller/user";
-import * as taskCtrl from "~/controller/task";
+import { index } from "~/controller/index.js";
+import * as userCtrl from "~/controller/user.js";
+import * as taskCtrl from "~/controller/task.js";
 
-import { authenticate } from "~/middleware/authenticate";
+import { authenticate } from "~/middleware/authenticate.js";
 
 const router = Router();
 

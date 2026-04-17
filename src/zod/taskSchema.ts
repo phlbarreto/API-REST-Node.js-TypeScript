@@ -4,7 +4,7 @@ z.config(pt());
 
 export const taskSchema = z.object({
   title: z.string("Coluna 'title' é obrigatório!"),
-  description: z.string("coluna 'description' é obrigatória!"),
+  description: z.string("Coluna 'description' é obrigatória!"),
   status: z.enum(["pending", "in_progress", "done"]).optional(),
 });
 
