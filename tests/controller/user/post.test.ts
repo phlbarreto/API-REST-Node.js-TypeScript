@@ -2,7 +2,6 @@ import { API, clearDatabase, waitForAllServices } from "$/orchestrator.js";
 import crypto from "node:crypto";
 
 beforeAll(async () => {
-  await clearDatabase();
   await waitForAllServices();
 });
 
