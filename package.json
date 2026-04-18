@@ -15,7 +15,7 @@
     "migrations:generate": "prisma generate",
     "migrations:deploy": "npm run migrations:generate && dotenv -e .env -- prisma migrate deploy",
     "server:watch": "tsx --watch src/server.ts",
-    "build": "tsup src/index.ts --out-dir api --format esm --clean && tsc-alias -p tsconfig.json --outDir api",
+    "build": "tsup",
     "start": "node api/index.js",
     "test": "npm run services:up && npm run migrations:up && npm run migrations:generate && concurrently -k -s first -n \"server,test\" --hide server \"tsx src/server.ts\" vitest",
     "test:watch": "vitest"
@@ -53,7 +53,6 @@
     "concurrently": "9.2.1",
     "dotenv-cli": "11.0.0",
     "prisma": "7.7.0",
-    "tsc-alias": "1.8.16",
     "tsup": "8.5.1",
     "tsx": "4.21.0",
     "typescript": "6.0.3",
