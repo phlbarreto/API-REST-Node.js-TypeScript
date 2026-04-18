@@ -1,5 +1,5 @@
-import { API, clearDatabase, waitForAllServices } from "$/orchestrator.js";
-import crypto from "node:crypto";
+import { API, generateUserData, waitForAllServices } from "$/orchestrator.js";
+import { randomBytes } from "node:crypto";
 
 beforeAll(async () => {
   await waitForAllServices();
@@ -7,11 +7,7 @@ beforeAll(async () => {
 
 describe("POST `/user`", () => {
   test("Com todos os dados corretos", async () => {
-    const userData = {
-      name: "Teste Usuario",
-      email: "email@teste.com",
-      password: "senha@teste",
-    };
+    const userData = generateUserData();
 
     const response = await fetch(API.user, {
       method: "POST",
@@ -78,7 +74,7 @@ describe("POST `/user`", () => {
   });
 
   test("Com `senha` excedendo 60 caracteres", async () => {
-    const password = crypto.randomBytes(31).toString("hex"); //gera um string de 62 caracteres
+    const password = randomBytes(31).toString("hex"); //gera um string de 62 caracteres
 
     const userData = {
       name: "Com Senha Inválida ",

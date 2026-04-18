@@ -1,6 +1,5 @@
 import retry from "async-retry";
 import { faker } from "@faker-js/faker";
-import { resetDatabase } from "~/infra/scripts/migrator.js";
 import { registerUser } from "~/models/user.js";
 import { UserInput } from "~/zod/userSchema.js";
 import * as session from "~/models/session.js";
@@ -30,13 +29,9 @@ export async function waitForAllServices() {
   }
 }
 
-export async function clearDatabase() {
-  await resetDatabase();
-}
-
 export async function createUser(userValues?: UserInput) {
   return await registerUser({
-    name: userValues?.name ?? faker.person.fullName(),
+    name: userValues?.name ?? faker.person.fullName().slice(0, 30),
     email: userValues?.email ?? faker.internet.email(),
     password: userValues?.password ?? "ValidPassword",
   });
@@ -48,4 +43,12 @@ export async function createSession(user: session.AuthenticatedUser) {
 
 export async function createTask(task: Task, user: session.AuthenticatedUser) {
   return await taskModel.create(task, user.id);
+}
+
+export function generateUserData() {
+  return {
+    email: faker.internet.email(),
+    name: faker.person.fullName().slice(0, 30),
+    password: faker.internet.password({ length: 20 }),
+  };
 }

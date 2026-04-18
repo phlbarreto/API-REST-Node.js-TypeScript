@@ -11,8 +11,7 @@ export default defineConfig({
     testTimeout: 60_000,
     environment: "node",
     globals: true,
-    pool: "threads",
-    maxConcurrency: 1,
+    reporters: ["tree"],
     exclude: ["node_modules", "dist", ".idea", ".git", ".cache"],
   },
 });

@@ -1,7 +1,7 @@
-import * as dotenv from "dotenv";
+import { config } from "dotenv";
 import { expand } from "dotenv-expand";
 
-const enviroment = dotenv.config();
+const enviroment = config({ quiet: true });
 expand(enviroment);
 
 export const env = {
@@ -13,7 +13,7 @@ export const env = {
 function getDatabaseUrl() {
   const DATABASE_URL = process.env.DATABASE_URL;
   if (!DATABASE_URL) throw new Error("❌ Database url indefinida!");
-  
-  console.log("🔍 Database url carregada!");
+
+  if (process.env.NODE_ENV === "dev") console.log("🔍 Database url carregada!");
   return DATABASE_URL;
 }
