@@ -37,8 +37,8 @@ enum TaskStatus {
 
 model Task {
   id          String     @id @default(uuid())
-  title       String
-  description String
+  title       String     @db.VarChar(200)
+  description String     @db.VarChar(500)
   status      TaskStatus @default(pending)
   user_id     String
   created_at  DateTime   @default(now())
