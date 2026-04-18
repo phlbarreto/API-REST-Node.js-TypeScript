@@ -31,7 +31,7 @@ export async function waitForAllServices() {
 
 export async function createUser(userValues?: UserInput) {
   return await registerUser({
-    name: userValues?.name ?? faker.person.fullName(),
+    name: userValues?.name ?? faker.person.fullName().slice(0, 30),
     email: userValues?.email ?? faker.internet.email(),
     password: userValues?.password ?? "ValidPassword",
   });
@@ -48,7 +48,7 @@ export async function createTask(task: Task, user: session.AuthenticatedUser) {
 export function generateUserData() {
   return {
     email: faker.internet.email(),
-    name: faker.person.fullName(),
+    name: faker.person.fullName().slice(0, 30),
     password: faker.internet.password({ length: 20 }),
   };
 }
