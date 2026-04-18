@@ -15,7 +15,7 @@
     "migrations:generate": "prisma generate",
     "migrations:deploy": "npm run migrations:generate && dotenv -e .env -- prisma migrate deploy",
     "server:watch": "tsx --watch src/server.ts",
-    "build": "tsup",
+    "build": "prisma generate && tsup",
     "start": "node api/index.js",
     "test": "npm run services:up && npm run migrations:up && npm run migrations:generate && concurrently -k -s first -n \"server,test\" --hide server \"tsx src/server.ts\" vitest",
     "test:watch": "vitest"
