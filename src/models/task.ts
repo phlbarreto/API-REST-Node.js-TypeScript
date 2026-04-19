@@ -1,15 +1,16 @@
-import { TaskDelegate } from "@/generated/models.js";
 import { prisma } from "~/infra/database.js";
-import { Task as TaskEnt, UpdateTask } from "~/zod/taskSchema.js";
+import { BaseModel } from "~/models/base.js";
+import { TaskDelegate } from "@/generated/models.js";
+import { TaskInput, UpdateTask } from "~/zod/taskSchema.js";
+import { Task } from "@/generated/client.js";
 
-class TaskModel {
-  private model: TaskDelegate;
-  constructor() {
-    this.model = prisma.task;
+class TaskModel extends BaseModel<TaskDelegate> {
+  constructor(model: TaskDelegate) {
+    super(model);
   }
 
-  async findAll(userId: string) {
-    const tasks = await this.model.findMany({
+  async findAll(userId: string): Promise<Task[] | null> {
+    const tasks: Task[] = await this.findMany({
       where: {
         user_id: userId,
       },
@@ -24,21 +25,17 @@ class TaskModel {
     return tasks;
   }
 
-  async create(providedData: TaskEnt, user_id: string) {
+  async create(providedData: TaskInput, user_id: string): Promise<Task> {
     const data = {
       ...providedData,
       user_id,
     };
 
-    const task = await this.model.create({
-      data,
-    });
-
-    return task;
+    return await this.createOne(data);
   }
 
-  async findOne(id: string) {
-    const task = await this.model.findFirst({
+  async findOne(id: string): Promise<Task | null> {
+    const task: Task = await this.findFirst({
       where: { id },
     });
 
@@ -47,24 +44,20 @@ class TaskModel {
     return task;
   }
 
-  async update(id: string, providedData: UpdateTask) {
+  async update(id: string, providedData: UpdateTask): Promise<Task | null> {
     const now = new Date();
     const data = {
       ...providedData,
       updated_at: now,
     };
 
-    const updatedTask = await this.model.update({
-      where: { id },
-      data,
-    });
+    const updatedTask = await this.updateOne({ id }, data);
     return updatedTask;
   }
+
   async deleteOne(id: string) {
-    await this.model.delete({
-      where: { id },
-    });
+    await this.deleteOneById({ id });
   }
 }
 
-export const taskModel = new TaskModel();
+export const taskModel = new TaskModel(prisma.task);

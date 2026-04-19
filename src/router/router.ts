@@ -9,7 +9,7 @@ const router = Router();
 
 router.get("/", index);
 
-router.post("/login", userCtrl.authentication);
+router.post("/login", userCtrl.login);
 router.post("/user", userCtrl.register);
 router.get("/user", userCtrl.getUser);
 
