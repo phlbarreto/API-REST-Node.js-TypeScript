@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { loginSchema } from "~/zod/userSchema.js";
 import { registerSchema } from "~/zod/userSchema.js";
-import { AuthenticatedUser, validateSession } from "~/models/session.js";
-import { registerUser, login } from "~/models/user.js";
+import { AuthenticatedUser, sessionModel } from "~/models/session.js";
+import { userModel } from "~/models/user.js";
 import { CookieResponse } from "~/models/cookieResponse.js";
 
 export const register = async (req: Request, res: Response) => {
@@ -15,7 +15,7 @@ export const register = async (req: Request, res: Response) => {
   }
 
   try {
-    const registeredUser = await registerUser(result.data);
+    const registeredUser = await userModel.create(result.data);
     response.created({
       message: `Usuário '${registeredUser.name}' criado com sucesso!`,
     });
@@ -25,7 +25,7 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-export const authentication = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response) => {
   const result = loginSchema.safeParse(req.body);
 
   const response = new CookieResponse(res);
@@ -34,16 +34,16 @@ export const authentication = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const sessionObject = await login(result.data);
-    if (!sessionObject) {
+    const user = await userModel.authenticateUser(result.data);
+    if (!user) {
       response.unauthorized(
         "Verifique os dados enviados e tente novamente",
         "Email ou senha inválido",
       );
       return;
     }
-
-    new CookieResponse(res).setCookie("session", sessionObject.id);
+    const session = await sessionModel.create(user.id);
+    new CookieResponse(res).setCookie("session", session.id);
     response.created({ message: "Usuário autenticado!" });
   } catch (error) {
     console.error("Erro insperado ao efetuar login: ", error);
@@ -63,7 +63,7 @@ export const getUser = async (
   }
 
   try {
-    const user = await validateSession(sessionId);
+    const user = await sessionModel.validate(sessionId);
 
     if (!user) {
       response.clearCookie("session");

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { CookieResponse } from "~/models/cookieResponse.js";
-import { AuthenticatedUser, validateSession } from "~/models/session.js";
+import { AuthenticatedUser, sessionModel } from "~/models/session.js";
 
 export interface AuthenticatedRequest extends Request {
   context?: {
@@ -20,9 +20,9 @@ export async function authenticate(
     return;
   }
 
-  const userOrError = await validateSession(sessionId);
+  const user = await sessionModel.validate(sessionId);
 
-  if (!userOrError) {
+  if (!user) {
     response.clearCookie("session");
     response.unauthorized(
       "Por favor, faça o login novamente.",
@@ -30,10 +30,9 @@ export async function authenticate(
     );
     return;
   }
-  if (!req.context) {
-    req.context = { user: userOrError };
-  }
 
-  req.context.user = userOrError;
+  if (!req.context) req.context = { user };
+
+  req.context.user = user;
   next();
 }
