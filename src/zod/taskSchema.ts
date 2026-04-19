@@ -14,7 +14,7 @@ export const taskSchema = z.object({
   status: z.enum(["pending", "in_progress", "done"]).optional(),
 });
 
-export type Task = z.infer<typeof taskSchema>;
+export type TaskInput = z.infer<typeof taskSchema>;
 
 export const updateTaskSchema = taskSchema
   .partial()
