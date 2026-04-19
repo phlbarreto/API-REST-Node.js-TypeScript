@@ -1,33 +1,39 @@
 import { LoginInput, UserInput } from "~/zod/userSchema.js";
-import { createSession } from "~/models/session.js";
 import { comparePassword, hashPassword } from "./password.js";
 import { prisma } from "~/infra/database.js";
+import { BaseModel } from "./base.js";
+import { UserDelegate } from "@/generated/models.js";
+import { AuthenticatedUser } from "./session.js";
 
-export const registerUser = async (userInputValues: UserInput) => {
-  const password = await hashPassword(userInputValues.password);
-  const newUser = {
-    ...userInputValues,
-    password,
-  };
-  return await prisma.user.create({ data: newUser });
-};
+class UserModel extends BaseModel<UserDelegate> {
+  constructor(model: UserDelegate) {
+    super(model);
+  }
 
-export const login = async (userInputValues: LoginInput) => {
-  const user = await prisma.user.findUnique({
-    where: { email: userInputValues.email },
-  });
+  async create(userInputValues: UserInput): Promise<AuthenticatedUser> {
+    userInputValues.password = await hashPassword(userInputValues.password);
+    return await this.createOne(userInputValues);
+  }
 
-  if (!user) return false;
+  async authenticateUser(userInputValues: LoginInput) {
+    const user = await this.findUnique({
+      where: { email: userInputValues.email },
+    });
+    if (!user) return false;
 
-  const isValid = await comparePassword(
-    userInputValues.password,
-    user.password,
-  );
+    const isValid = await comparePassword(
+      userInputValues.password,
+      user.password,
+    );
+    if (!isValid) return false;
 
-  if (!isValid) return false;
+    return user;
+  }
 
-  const session = await createSession(user.id);
-  if (!session) return false;
+  async findOne(id: string) {
+    return await this.findFirst({ where: { id } });
+  }
+}
 
-  return session;
-};
+export const userModel = new UserModel(prisma.user);
+export type UserModelClass = UserModel;
