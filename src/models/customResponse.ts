@@ -6,7 +6,7 @@ export class CustomResponse {
     this.response = response;
   }
 
-  errorHandler(error: any) {
+  private errorHandler(error: any) {
     if (error.name === "ZodError") {
       const { issues } = error;
       return setErrorMessage(issues);
