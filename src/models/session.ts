@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { env } from "~/config/env.js";
 import { prisma } from "~/infra/database.js";
 import { BaseModel } from "./base.js";
-import { UserDelegate, UserSessionDelegate } from "@/generated/models.js";
+import { UserSessionDelegate } from "@/generated/models.js";
 import { userModel, UserModelClass } from "./user.js";
 
 export type AuthenticatedUser = {
@@ -30,11 +30,15 @@ class SessionModel extends BaseModel<UserSessionDelegate> {
     this.userModel = userModel;
   }
 
-  async create(user_id: string): Promise<UserSession> {
-    const id = randomUUID();
+  private getExpiresAt() {
     const now = new Date();
     const expires_at = new Date(now.getTime() + env.INACTIVITY_TIMEOUT);
+    return { now, expires_at };
+  }
 
+  async create(user_id: string): Promise<UserSession> {
+    const id = randomUUID();
+    const { now, expires_at } = this.getExpiresAt();
     return await this.createOne({
       id,
       user_id,
@@ -43,22 +47,33 @@ class SessionModel extends BaseModel<UserSessionDelegate> {
     });
   }
 
-  async validate(sessionId: string): Promise<AuthenticatedUser | false> {
+  async findOneValid(sessionId: string): Promise<UserSession | false> {
     const sessionObject: UserSession = await this.findUnique({
       where: { id: sessionId },
     });
+
     if (!sessionObject) return false;
+
+    const now = new Date();
+    const isExceededTime = now.getTime() > sessionObject.expires_at.getTime();
+
+    if (isExceededTime) return false;
+
+    return sessionObject;
+  }
+
+  async validate(sessionId: string): Promise<AuthenticatedUser | false> {
+    const sessionObject = await this.findOneValid(sessionId);
+    if (!sessionObject) return false;
+
+    const { now, expires_at } = this.getExpiresAt();
+    await this.updateOne(
+      { id: sessionId },
+      { last_active_at: now, expires_at },
+    );
 
     const user = await this.userModel.findOne(sessionObject.user_id);
     if (!user) return false;
-
-    const now = new Date();
-    const lastActive = new Date(String(sessionObject.last_active_at));
-
-    if (now.getTime() - lastActive.getTime() > env.INACTIVITY_TIMEOUT)
-      return false;
-
-    await this.updateOne({ id: sessionId }, { last_active_at: now });
 
     const { email, id, name, created_at, updated_at } = user;
     const secureObjectValue: AuthenticatedUser = {
@@ -69,6 +84,14 @@ class SessionModel extends BaseModel<UserSessionDelegate> {
       updated_at,
     };
     return secureObjectValue;
+  }
+
+  async invalidate(sessionId: string) {
+    const sessionObject = await this.findOneValid(sessionId);
+    if (!sessionObject) return false;
+
+    await this.updateOne({ id: sessionId }, { expires_at: new Date() });
+    return true;
   }
 }
 
