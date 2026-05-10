@@ -43,10 +43,35 @@ export const login = async (req: Request, res: Response) => {
       return;
     }
     const session = await sessionModel.create(user.id);
-    new CookieResponse(res).setCookie("session", session.id);
+    response.setCookie("session", session.id);
     response.created({ message: "Usuário autenticado!" });
   } catch (error) {
     console.error("Erro insperado ao efetuar login: ", error);
+    response.internalServerError();
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  const response = new CookieResponse(res);
+  const sessionId = req.cookies.session;
+  if (!sessionId) {
+    response.unauthorized("Faça o login.");
+    return;
+  }
+  try {
+    response.clearCookie("session");
+    const isLogouted = await sessionModel.invalidate(sessionId);
+    if (!isLogouted) {
+      response.unauthorized(
+        "Verifique se está logado e tente novamente.",
+        "Sessão expirada.",
+      );
+      return;
+    }
+
+    response.success({ message: "Sessão encerrada!" });
+  } catch (error) {
+    console.error("Erro insperado para realizar o logout: ", error);
     response.internalServerError();
   }
 };

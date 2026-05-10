@@ -10,8 +10,9 @@ const router = Router();
 router.get("/", index);
 
 router.post("/login", userCtrl.login);
-router.post("/user", userCtrl.register);
 router.get("/user", userCtrl.getUser);
+router.post("/user", userCtrl.register);
+router.delete("/user", userCtrl.logout);
 
 router.get("/tasks", authenticate, taskCtrl.getAllTasks);
 router.get("/tasks/:id", authenticate, taskCtrl.getOneTask);
